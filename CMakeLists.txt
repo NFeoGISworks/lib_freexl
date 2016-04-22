@@ -80,7 +80,6 @@ endif(WIN32)
 include(FindAnyProject)
 find_anyproject(ICONV REQUIRED)
 
-set(BUILD_SHARED_LIBS TRUE)
 if(BUILD_SHARED_LIBS)
     set(LIB_NAME ${PROJECT_NAME})
     add_library(${LIB_NAME} SHARED ${SOURCES})
@@ -95,3 +94,18 @@ endif()
 target_link_extlibraries(${LIB_NAME})
 
 export(TARGETS ${LIB_NAME} FILE ${LIB_NAME}-exports.cmake)
+
+#------------------------------------------------------------------------------
+# targets installation
+#------------------------------------------------------------------------------
+
+install(TARGETS ${LIB_NAME}
+  RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+  LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+  ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
+)
+
+file(GLOB HEADERS "${PROJECT_SOURCE_DIR}/headers/*.h")
+install(FILES ${HEADERS}
+  DESTINATION ${INSTALL_INC_DIR}
+)
