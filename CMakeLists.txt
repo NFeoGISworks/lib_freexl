@@ -1,5 +1,5 @@
 ################################################################################
-# Project:  Lib JPEG
+# Project:  Lib freexl
 # Purpose:  CMake build scripts
 # Author:   Alexander Lisovenko, alexander.lisovenko@nexgis.com
 ################################################################################
