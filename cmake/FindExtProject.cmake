@@ -164,6 +164,9 @@ function(find_extproject name)
     if(CMAKE_GENERATOR_TOOLSET)
         list(APPEND find_extproject_CMAKE_ARGS -DCMAKE_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET})
     endif() 
+    if(SKIP_GIT_PULL)
+        list(APPEND find_extproject_CMAKE_ARGS -DSKIP_GIT_PULL=${SKIP_GIT_PULL})    
+    endif()
 
     get_cmake_property(_variableNames VARIABLES)
     string (REGEX MATCHALL "(^|;)WITH_[A-Za-z0-9_]*" _matchedVars "${_variableNames}") 
@@ -206,7 +209,7 @@ function(find_extproject name)
                     message(STATUS \"Remove ${name}_EP-build\")
                     file(REMOVE ${EXT_STAMP_DIR}/${name}_EP-build)
                 endif()
-                file(WRITE ${EXT_STAMP_DIR}/${name}_EP-gitpull.txt "")
+                file(WRITE ${EXT_STAMP_DIR}/${name}_EP-gitpull.txt \"\")
             endif()
          endif()")
                   
@@ -216,10 +219,12 @@ function(find_extproject name)
         UPDATE_DISCONNECTED 1
     )
     
+    if(NOT SKIP_GIT_PULL)
     add_custom_command(TARGET ${name}_EP PRE_BUILD
                COMMAND ${CMAKE_COMMAND} -P ${EP_PREFIX}/tmp/${name}_EP-checkupdate.cmake
                COMMENT "Check if update needed ..."               
                VERBATIM)
+    endif()           
     
     set(RECONFIGURE OFF)
     set(INCLUDE_EXPORT_PATH "${EXT_BUILD_DIR}/${repo_project}-exports.cmake") 
@@ -341,6 +346,12 @@ function(find_extproject name)
     else()
         set(_INST_ROOT_PATH ${CMAKE_INSTALL_PREFIX})
     endif()
+    
+    # create directories
+    file(MAKE_DIRECTORY "${EXT_INSTALL_DIR}/bin")
+    file(MAKE_DIRECTORY "${EXT_INSTALL_DIR}/lib")
+    file(MAKE_DIRECTORY "${EXT_INSTALL_DIR}/include")
+    file(MAKE_DIRECTORY "${EXT_INSTALL_DIR}/share")
     
     install( DIRECTORY ${EXT_INSTALL_DIR}/bin
              DESTINATION ${_INST_ROOT_PATH}
